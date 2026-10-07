@@ -1,0 +1,3 @@
+[env]
+# Larger test-thread stack: the develop settings struct overflows the default 2 MB in debug builds
+RUST_MIN_STACK = "16777216"

@@ -1,0 +1,71 @@
+[package]
+name = "darkroom"
+version = "1.0.0"
+edition = "2024"
+description = "RAW photo management and developing for Windows"
+authors = ["OrionNest"]
+license-file = "LICENSE.md"
+repository = "https://github.com/OrionNestBot/Darkroom"
+publish = false
+
+[features]
+# Calibration test modules (src/develop/calib.rs, lrcompare.rs, profile_fit.rs; not in the repository)
+calib = []
+
+[dependencies]
+ab_glyph = "0.2.32"
+anyhow = "1.0.104"
+crossbeam-channel = "0.5.17"
+directories = "6.0.0"
+eframe = { version = "0.36.2", default-features = false, features = ["default_fonts", "glow", "persistence"] }
+egui = "0.36.2"
+fast_image_resize = "6.1.0"
+flate2 = "1.1.10"
+image = { version = "0.25.10", default-features = false, features = ["jpeg", "png", "tiff"] }
+kamadak-exif = "0.6.1"
+lru = "0.18.5"
+mimalloc = "0.1.52"
+parking_lot = "0.12.5"
+ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "load-dynamic", "directml", "api-24"] }
+rawler = "0.8.0"
+sha2 = "0.11.0"
+ureq = { version = "3.4.2", default-features = false, features = ["rustls", "platform-verifier"] }
+rayon = "1.12.0"
+rfd = "0.17.2"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+ttf-parser = "0.25.1"
+windows = { version = "0.62.2", features = ["Win32_Graphics_Imaging", "Win32_System_Com", "Win32_Foundation", "Win32_System_LibraryLoader", "Win32_UI_Shell", "Win32_UI_ColorSystem", "Win32_System_WinRT", "Foundation", "Foundation_Collections", "Graphics_Imaging", "Media_FaceAnalysis", "Security_Cryptography", "Storage_Streams"] }
+winreg = "0.56.0"
+
+# RAW decoder: modified rawler 0.8.0 (unknown-camera fallback, extra camera folder; see vendor/rawler/DARKROOM_CHANGES.md)
+[patch.crates-io]
+rawler = { path = "vendor/rawler" }
+
+[build-dependencies]
+winresource = "0.1.31"
+flate2 = "1.1.10"
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[[bin]]
+name = "Darkroom"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+# Optimize dependencies in dev builds so image processing stays usable
+[profile.dev.package."*"]
+opt-level = 3
+
+# Calibration profile: release optimizations without LTO for faster builds
+[profile.calib]
+inherits = "release"
+lto = false
+codegen-units = 16

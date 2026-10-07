@@ -1,0 +1,17 @@
+/target
+# Build output (published as a release asset)
+/Darkroom.exe
+# Local test photos
+/sample/
+# Calibration tools (not needed by the app): profile and tone-curve fitting
+/tools/
+/src/develop/calib.rs
+/src/develop/lrcompare.rs
+/src/develop/profile_fit.rs
+# Icon generator and preview (the app only uses icon.ico and icon.png)
+/assets/make_icon.py
+/assets/icon_preview.png
+# Release assets (e.g. the ai-files mirror), not stored in the repository
+/release/
+# Local development notes
+/DESIGN.md
