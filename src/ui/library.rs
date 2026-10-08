@@ -308,7 +308,7 @@ fn toolbar(app: &mut App, ui: &mut Ui) {
             ui.separator();
             ui.label(egui::RichText::new(tr!("정렬", "Sort")).color(TEXT_WEAK()));
             let before = (app.prefs.sort, app.prefs.sort_desc);
-            egui::ComboBox::from_id_salt("sort").width(90.0).selected_text(app.prefs.sort.name()).show_ui(ui, |ui| {
+            egui::ComboBox::from_id_salt("sort").truncate().width(90.0).selected_text(app.prefs.sort.name()).show_ui(ui, |ui| {
                 for k in SortKey::ALL {
                     ui.selectable_value(&mut app.prefs.sort, k, k.name());
                 }

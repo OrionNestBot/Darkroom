@@ -1484,7 +1484,7 @@ pub(super) fn right_panel(app: &mut App, ui: &mut Ui) -> (Edit, String) {
                     let (lr, _) = ui.allocate_exact_size(vec2(widgets::SLIDER_LABEL_W, 20.0), Sense::hover());
                     ui.painter().text(lr.left_center(), Align2::LEFT_CENTER, tr!("프로파일", "Profile"), FontId::proportional(12.0), TEXT_WEAK());
                     let cur = if s.profile.is_empty() { crate::develop::dcp::DEFAULT_PROFILE.to_string() } else { s.profile.clone() };
-                    egui::ComboBox::from_id_salt("profile").width(ui.available_width() - 8.0).height(520.0).selected_text(crate::develop::dcp::profile_display(&cur)).show_ui(ui, |ui| {
+                    egui::ComboBox::from_id_salt("profile").truncate().width(ui.available_width() - 8.0).height(520.0).selected_text(crate::develop::dcp::profile_display(&cur)).show_ui(ui, |ui| {
                         for (group, names) in crate::develop::dcp::profile_groups(rc) {
                             ui.label(egui::RichText::new(group).size(10.5).color(TEXT_DIM()));
                             for name in names {
@@ -1520,7 +1520,7 @@ pub(super) fn right_panel(app: &mut App, ui: &mut Ui) -> (Edit, String) {
                         } else {
                             tr!("촬영 시", "As Shot")
                         };
-                        egui::ComboBox::from_id_salt("wb_preset").width(80.0).selected_text(crate::i18n::t(cur)).show_ui(ui, |ui| {
+                        egui::ComboBox::from_id_salt("wb_preset").truncate().width(80.0).selected_text(crate::i18n::t(cur)).show_ui(ui, |ui| {
                             if ui.selectable_label(!s.wb_custom, tr!("촬영 시", "As Shot")).clicked() {
                                 s.wb_custom = false;
                                 e.changed = true;

@@ -798,7 +798,7 @@ pub fn print_dialog(app: &mut App, ctx: &egui::Context) {
                         let l = &mut d.lay;
                         super::form::card(ui, tr!("용지", "Paper"), "", |ui| {
                             super::form::row(ui, tr!("크기", "Size"), |ui| {
-                                egui::ComboBox::from_id_salt("paper").width(160.0).selected_text(l.paper.name()).show_ui(ui, |ui| {
+                                egui::ComboBox::from_id_salt("paper").truncate().width(160.0).selected_text(l.paper.name()).show_ui(ui, |ui| {
                                     for p in Paper::ALL {
                                         ui.selectable_value(&mut l.paper, p, p.name());
                                     }

@@ -443,7 +443,7 @@ fn import_dialog(app: &mut App, ctx: &egui::Context) {
                 form::card(ui, tr!("가져오면서 적용", "Apply during import"), "", |ui| {
                     form::row(ui, tr!("현상 프리셋", "Develop preset"), |ui| {
                         let cur = plan.preset.and_then(|id| presets.iter().find(|p| p.id == id)).map(|p| p.name.clone()).unwrap_or_else(|| tr!("없음", "None").into());
-                        egui::ComboBox::from_id_salt("imp_preset").width(260.0).selected_text(cur).show_ui(ui, |ui| {
+                        egui::ComboBox::from_id_salt("imp_preset").truncate().width(260.0).selected_text(cur).show_ui(ui, |ui| {
                             ui.selectable_value(&mut plan.preset, None, tr!("없음", "None"));
                             for p in presets.iter() {
                                 ui.selectable_value(&mut plan.preset, Some(p.id), format!("{} / {}", p.group, p.name));
@@ -695,7 +695,7 @@ fn export_dialog(app: &mut App, ctx: &egui::Context) {
                             form::switch_row(ui, tr!("크기 조정", "Resize"), &mut s.resize, d);
                             if s.resize {
                                 form::row(ui, tr!("기준", "Fit"), |ui| {
-                                    egui::ComboBox::from_id_salt("rmode").width(110.0).selected_text(s.resize_mode.name()).show_ui(ui, |ui| {
+                                    egui::ComboBox::from_id_salt("rmode").truncate().width(110.0).selected_text(s.resize_mode.name()).show_ui(ui, |ui| {
                                         for m in ResizeMode::ALL {
                                             ui.selectable_value(&mut s.resize_mode, m, m.name());
                                         }
@@ -729,7 +729,7 @@ fn export_dialog(app: &mut App, ctx: &egui::Context) {
                         });
                         form::card(ui, tr!("메타데이터", "Metadata"), "", |ui| {
                             form::row(ui, tr!("포함", "Include"), |ui| {
-                                egui::ComboBox::from_id_salt("metam").width(220.0).selected_text(s.metadata.name()).show_ui(ui, |ui| {
+                                egui::ComboBox::from_id_salt("metam").truncate().width(220.0).selected_text(s.metadata.name()).show_ui(ui, |ui| {
                                     for m in export::metadata::MetaMode::ALL {
                                         ui.selectable_value(&mut s.metadata, m, m.name());
                                     }
@@ -924,8 +924,9 @@ fn wm_editor(app: &mut App, ctx: &egui::Context) {
         |ui| {
             ui.horizontal_top(|ui| {
                 // Preview
-                let pw = (ui.available_width() - 400.0).max(300.0);
-                ui.vertical_centered(|ui| {
+                // Left-anchored column: a centered layout would shrink around its middle and push the right column out of the dialog
+                let pw = (ui.available_width() - 384.0 - 12.0 - 2.0 * ui.spacing().item_spacing.x).max(300.0);
+                ui.allocate_ui_with_layout(vec2(pw, 0.0), egui::Layout::top_down(egui::Align::Center), |ui| {
                     ui.set_width(pw);
                     if let Some(t) = &ed.tex {
                         let size = t.size_vec2();
@@ -944,7 +945,7 @@ fn wm_editor(app: &mut App, ctx: &egui::Context) {
                         let w = &mut ed.wm;
                         form::card(ui, "", "", |ui| {
                             form::row(ui, tr!("불러오기", "Load"), |ui| {
-                                egui::ComboBox::from_id_salt("wm_list").width(200.0).selected_text(if ed.list.is_empty() { tr!("저장된 것 없음", "Nothing saved") } else { tr!("목록에서 선택…", "Choose from list…") }).show_ui(ui, |ui| {
+                                egui::ComboBox::from_id_salt("wm_list").truncate().width(200.0).selected_text(if ed.list.is_empty() { tr!("저장된 것 없음", "Nothing saved") } else { tr!("목록에서 선택…", "Choose from list…") }).show_ui(ui, |ui| {
                                     for x in &ed.list {
                                         if ui.selectable_label(x.name == w.name, &x.name).clicked() {
                                             *w = x.clone();
@@ -969,7 +970,7 @@ fn wm_editor(app: &mut App, ctx: &egui::Context) {
                             });
                             form::card(ui, tr!("글꼴", "Font"), "", |ui| {
                                 form::row(ui, tr!("글꼴", "Font"), |ui| {
-                                    egui::ComboBox::from_id_salt("wm_font").width(200.0).selected_text(&w.font_name).show_ui(ui, |ui| {
+                                    egui::ComboBox::from_id_salt("wm_font").truncate().width(200.0).selected_text(&w.font_name).show_ui(ui, |ui| {
                                         ui.add(egui::TextEdit::singleline(&mut ed.font_filter).hint_text(tr!("검색", "Search")));
                                         let f = ed.font_filter.to_lowercase();
                                         egui::ScrollArea::vertical().max_height(300.0).show(ui, |ui| {

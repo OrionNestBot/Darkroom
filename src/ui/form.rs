@@ -53,6 +53,10 @@ pub fn modal<B, F>(
                 ui.set_max_height(body_h - 24.0);
                 body(ui)
             });
+            // Self-test: report body content wider than the dialog (it would break the header and footer lines)
+            if std::env::var_os("DARKROOM_AUTOTEST").is_some() && b.response.rect.width() > w + 1.0 {
+                eprintln!("[layout] modal \"{id}\" body {:.0}px wider than {w:.0}px", b.response.rect.width());
+            }
             hline(ui, w);
             // Footer button row
             let f = egui::Frame::new().fill(PANEL()).corner_radius(CornerRadius { nw: 0, ne: 0, sw: 10, se: 10 }).inner_margin(Margin::symmetric(20, 12)).show(ui, |ui| {
@@ -122,13 +126,22 @@ pub fn hint(ui: &mut Ui, text: &str) {
 
 /// Switch row: name in the label column, switch + description on the right
 pub fn switch_row(ui: &mut Ui, label: &str, on: &mut bool, desc: &str) -> bool {
-    row(ui, label, |ui| {
+    ui.horizontal_top(|ui| {
+        let (r, _) = ui.allocate_exact_size(vec2(LABEL_W, 22.0), Sense::hover());
+        ui.painter().text(r.left_center(), Align2::LEFT_CENTER, label, FontId::proportional(12.5), TEXT_WEAK());
         let ch = super::widgets::toggle(ui, on).changed();
         if !desc.is_empty() {
-            ui.label(egui::RichText::new(desc).size(11.5).color(if *on { TEXT() } else { TEXT_WEAK() }));
+            // Wrap within the remaining width so a long description never widens the dialog
+            let w = ui.available_width();
+            ui.allocate_ui(vec2(w, 0.0), |ui| {
+                ui.set_max_width(w);
+                ui.add_space(3.0);
+                ui.add(egui::Label::new(egui::RichText::new(desc).size(11.5).color(if *on { TEXT() } else { TEXT_WEAK() })).wrap());
+            });
         }
         ch
     })
+    .inner
 }
 
 /// Segmented control (joined buttons). Returns true when changed
